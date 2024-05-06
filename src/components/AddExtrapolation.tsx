@@ -1,17 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Text,
-  VStack,
-  HStack,
-  IconButton,
-} from '@chakra-ui/react';
+import { Box, Button, Text, IconButton } from '@chakra-ui/react';
 import { supabase } from '../supabaseClient';
-import { CloseIcon } from '@chakra-ui/icons';
 import LineGraph from './LineGraph';
 
 interface ExtrapolationEntry {
@@ -72,7 +61,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
     { year: '', value: '' },
   ]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // const [error, setError] = useState('');
 
   const [user, setUser] = useState<null | { id: string }>(null);
 
@@ -85,7 +74,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
   const handleExtrapolationSubmit = async () => {
     console.log('inside submit');
     if (!user) {
-      setError('You must be logged in to submit a extrapolation.');
+      // setError('You must be logged in to submit a extrapolation.');
       return;
     }
     try {
@@ -123,25 +112,25 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
     }
   };
 
-  const addExtrapolationEntry = () => {
-    setExtrapolations([...extrapolations, { year: '', value: '' }]);
-  };
+  // const addExtrapolationEntry = () => {
+  //   setExtrapolations([...extrapolations, { year: '', value: '' }]);
+  // };
 
-  const updateExtrapolationEntry = (
-    index: number,
-    field: keyof ExtrapolationEntry,
-    value: string
-  ) => {
-    const newExtrapolations = [...extrapolations];
-    newExtrapolations[index][field] = value;
-    setExtrapolations(newExtrapolations);
-  };
+  // const updateExtrapolationEntry = (
+  //   index: number,
+  //   field: keyof ExtrapolationEntry,
+  //   value: string
+  // ) => {
+  //   const newExtrapolations = [...extrapolations];
+  //   newExtrapolations[index][field] = value;
+  //   setExtrapolations(newExtrapolations);
+  // };
 
-  const removeExtrapolationEntry = (index: number) => {
-    const newExtrapolations = [...extrapolations];
-    newExtrapolations.splice(index, 1);
-    setExtrapolations(newExtrapolations);
-  };
+  // const removeExtrapolationEntry = (index: number) => {
+  //   const newExtrapolations = [...extrapolations];
+  //   newExtrapolations.splice(index, 1);
+  //   setExtrapolations(newExtrapolations);
+  // };
 
   if (!user) {
     return (

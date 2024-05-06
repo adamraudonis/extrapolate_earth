@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: eslint
         name: eslint
-        entry: npm run lint
+        entry: eslint .
         language: system
         types: [javascript]
         files: '^.*\.(js|jsx|ts|tsx)$'
