@@ -2,7 +2,7 @@
 
 A website to share extrapolations about the future
 
-## Setup
+### Setup
 
 `npm i`
 
@@ -51,3 +51,10 @@ year
 value
 created_at
 user_id
+
+### Precommit Setup
+
+```
+pip install pre-commit
+pre-commit install
+```
