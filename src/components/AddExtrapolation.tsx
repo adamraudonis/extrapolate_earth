@@ -13,7 +13,7 @@ type AddExtrapolationProps = {
 };
 
 const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
-  // const svgRef = useRef<SVGSVGElement>(null);
+  // const svgRef = useRef<SVGSVGElement>(null);s
   const [points, setPoints] = useState<[number, number][]>([]);
   const graph = useRef<LineGraph | null>(null);
 
