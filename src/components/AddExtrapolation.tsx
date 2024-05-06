@@ -106,7 +106,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
       alert('Extrapolation submitted successfully.');
       setExtrapolations([{ year: '', value: '' }]);
     } catch (error: any) {
-      setError(error.error_description || error.message);
+      // setError(error.error_description || error.message);
     } finally {
       setLoading(false);
     }
