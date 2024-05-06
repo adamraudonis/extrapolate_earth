@@ -3,6 +3,6 @@ repos:
     hooks:
       - id: eslint
         name: eslint
-        entry: eslint .
+        entry: bash -c 'eslint . --cache --max-warnings=0'
         language: system
         files: '^.*\.(js|jsx|ts|tsx)$'
