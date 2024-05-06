@@ -5,5 +5,4 @@ repos:
         name: eslint
         entry: eslint .
         language: system
-        types: [javascript]
         files: '^.*\.(js|jsx|ts|tsx)$'
