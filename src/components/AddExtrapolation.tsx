@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Button, Text, IconButton } from '@chakra-ui/react';
+import { Box, Button, Text } from '@chakra-ui/react';
 import { supabase } from '../supabaseClient';
 import LineGraph from './LineGraph';
 
@@ -13,7 +13,7 @@ type AddExtrapolationProps = {
 };
 
 const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
-  // const svgRef = useRef<SVGSVGElement>(null);
+  // const svgRef = useRef<SVGSVGElement>(null);ss
   const [points, setPoints] = useState<[number, number][]>([]);
   const graph = useRef<LineGraph | null>(null);
 
