@@ -17,3 +17,9 @@ export type UserExtrapolation = {
   extrapolation_prompt_id: number;
   is_active: boolean;
 };
+
+export type PointGroup = {
+  // id: string;
+  points: [number, number][];
+  color: string;
+};

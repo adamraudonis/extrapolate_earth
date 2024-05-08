@@ -46,7 +46,6 @@ export default function App() {
   useEffect(() => {
     // This doesn't seem to work anymore
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log('inside got session');
       setSession(session);
 
       // if (session) {
@@ -63,9 +62,7 @@ export default function App() {
     });
 
     supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log('inside auth state change');
       if (session) {
-        console.log('inside session');
         // NOTE: This currently hangs
         // const { user } = session || {};
         // const { email, user_metadata, id } = user || {};
@@ -77,11 +74,10 @@ export default function App() {
         //   user_id: id,
         // };
         // await supabase.from('profiles').upsert(updates);
-        console.log('inside session 2');
       } else {
         console.log('no session');
       }
-      console.log('set is done true');
+
       // setIsDone(true);
       setSession(session);
     });

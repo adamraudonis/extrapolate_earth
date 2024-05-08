@@ -3,11 +3,6 @@ import { Box, Button, Text } from '@chakra-ui/react';
 import { supabase } from '../supabaseClient';
 import LineGraph from './LineGraph';
 
-interface ExtrapolationEntry {
-  year: string;
-  value: string;
-}
-
 type AddExtrapolationProps = {
   session: any;
 };
@@ -23,7 +18,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
       // Check if node exists and graph is not already initialized
       console.log('Initializing graph');
       graph.current = new LineGraph();
-      graph.current.initialize(node);
+      graph.current.initialize(node, false);
       graph.current.updatePoints = () => {
         console.log('inside update points');
         if (graph.current) {
@@ -57,11 +52,8 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
   const { id } = Object.fromEntries(urlParams.entries());
   const extrapolationPromptId = id;
 
-  const [extrapolations, setExtrapolations] = useState<ExtrapolationEntry[]>([
-    { year: '', value: '' },
-  ]);
   const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState('');
+  const [error, setError] = useState('');
 
   const [user, setUser] = useState<null | { id: string }>(null);
 
@@ -72,9 +64,8 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
   }, []);
 
   const handleExtrapolationSubmit = async () => {
-    console.log('inside submit');
     if (!user) {
-      // setError('You must be logged in to submit a extrapolation.');
+      setError('You must be logged in to submit a extrapolation.');
       return;
     }
     try {
@@ -94,17 +85,16 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
       const user_extrapolation_id = data[0].id;
 
       await supabase.from('extrapolation_values').insert(
-        extrapolations.map((extrapolation) => ({
+        points.map((point) => ({
           user_extrapolation_id: user_extrapolation_id,
           extrapolation_prompt_id: extrapolationPromptId,
-          year: extrapolation.year,
-          value: extrapolation.value,
+          year: point[0],
+          value: point[1],
           user_id: user.id,
         }))
       );
       if (error) throw error;
       alert('Extrapolation submitted successfully.');
-      setExtrapolations([{ year: '', value: '' }]);
     } catch (error: any) {
       // setError(error.error_description || error.message);
     } finally {
@@ -157,8 +147,8 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
             <table>
               <thead>
                 <tr>
-                  <th>X (Year)</th>
-                  <th>Y (Value)</th>
+                  <th>Year</th>
+                  <th>Value</th>
                 </tr>
               </thead>
               <tbody>
@@ -176,10 +166,11 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
               mt={4}
               colorScheme="teal"
               isLoading={loading}
-              onClick={() => handleExtrapolationSubmit}
+              onClick={() => handleExtrapolationSubmit()}
             >
               Submit Extrapolations
             </Button>
+            {error && <Box color="red.500">{error}</Box>}
           </div>
         </div>
       </Box>

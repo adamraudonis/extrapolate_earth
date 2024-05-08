@@ -24,7 +24,7 @@ const Header: React.FC = () => {
       bg="blue.500"
     >
       <Text fontSize="lg" fontWeight="bold">
-        Predicted Today
+        Extrapolate Earth
       </Text>
       {user ? (
         <Box>
