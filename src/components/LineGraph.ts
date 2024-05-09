@@ -12,11 +12,13 @@ export default class LineGraph {
   private line: d3.Line<[number, number]>;
   private xScale: d3.ScaleLinear<number, number>;
   private yScale: d3.ScaleLinear<number, number>;
+  private xOff: number = 40;
+  private yOff: number = 20;
 
   constructor() {
     this.line = d3.line();
     // Setup scales
-    this.xScale = d3.scaleLinear().domain([2020, 2050]).range([0, 800]);
+    this.xScale = d3.scaleLinear().domain([2024, 2074]).range([0, 800]);
     this.yScale = d3.scaleLinear().domain([0, 100]).range([600, 0]);
   }
 
@@ -28,12 +30,25 @@ export default class LineGraph {
   ) {
     this.pointGroups = pointGroups;
     this.points = points;
-
     this.svg = d3
       .select(svgElement)
-      .attr('width', 800)
-      .attr('height', 600)
+      .attr('width', 840) // Increase width to accommodate the margin
+      .attr('height', 640) // Increase height to accommodate the margin
       .style('border', '1px solid black');
+
+    this.svg
+      .append('g') // Append a group element for the plot area
+      // Apply a translation to create the margin
+      .attr(
+        'transform',
+        `translate(${this.xOff}, ${this.yScale(0) + this.yOff})`
+      )
+      .call(d3.axisBottom(this.xScale).tickFormat(d3.format('d')));
+
+    this.svg
+      .append('g') // Append a group element for the plot area
+      .attr('transform', `translate(${this.xOff}, ${this.yOff})`) // Apply a translation to create the margin
+      .call(d3.axisLeft(this.yScale));
 
     if (!isReadOnly) {
       this.svg.on('click', (event: MouseEvent) => {
@@ -42,8 +57,8 @@ export default class LineGraph {
           return; // Guard clause if svg is null
         }
         const [x, y] = d3.pointer(event, this.svg.node());
-        const year = Math.round(this.xScale.invert(x));
-        const value = this.yScale.invert(y);
+        const year = Math.round(this.xScale.invert(x - this.xOff));
+        const value = this.yScale.invert(y - this.yOff);
         this.addPoint([year, value]);
         this.updateGraph();
         this.updatePoints();
@@ -65,11 +80,13 @@ export default class LineGraph {
   }
 
   addPoint(point: [number, number]): void {
-    const existingPointIndex = this.points.findIndex((p) => p[0] === point[0]);
+    const pointX = Math.max(point[0], 2024);
+    const pointY = Math.max(point[1], 0);
+    const existingPointIndex = this.points.findIndex((p) => p[0] === pointX);
     if (existingPointIndex !== -1) {
-      this.points[existingPointIndex] = point;
+      this.points[existingPointIndex] = [pointX, pointY];
     } else {
-      this.points.push(point);
+      this.points.push([pointX, pointY]);
     }
     this.points.sort((a, b) => a[0] - b[0]);
   }
@@ -80,13 +97,20 @@ export default class LineGraph {
     }
 
     this.svg
-      .selectAll('path')
+      .selectAll('path.apath') // Select all path elements with class "apath"
+      .remove(); // Remove all selected elements
+
+    this.svg
+      .selectAll('path.apath')
       .data([this.points])
       .join('path')
       .attr(
         'd',
-        this.line.x((d) => this.xScale(d[0])).y((d) => this.yScale(d[1]))
+        this.line
+          .x((d) => this.xScale(d[0]) + this.xOff)
+          .y((d) => this.yScale(d[1]) + this.yOff)
       )
+      .attr('class', 'apath')
       .style('fill', 'none')
       .style('stroke', 'black')
       .style('stroke-width', 2);
@@ -95,12 +119,13 @@ export default class LineGraph {
       .selectAll('circle')
       .data(this.points)
       .join('circle')
-      .attr('cx', (d) => this.xScale(d[0]))
-      .attr('cy', (d) => this.yScale(d[1]))
+      .attr('cx', (d) => this.xScale(d[0]) + this.xOff)
+      .attr('cy', (d) => this.yScale(d[1]) + this.yOff)
       .attr('r', 5)
       .style('fill', 'cyan')
       .style('stroke', 'black')
-      .style('stroke-width', 1);
+      .style('stroke-width', 1)
+      .raise(); // Move the circles to the top of the SVG element
 
     this.pointGroups.forEach((pointGroup, idx) => {
       if (!this.svg) {
@@ -113,7 +138,9 @@ export default class LineGraph {
         .join('path')
         .attr(
           'd',
-          this.line.x((d) => this.xScale(d[0])).y((d) => this.yScale(d[1]))
+          this.line
+            .x((d) => this.xScale(d[0]) + this.xOff)
+            .y((d) => this.yScale(d[1]) + this.yOff)
         )
         .style('fill', 'none')
         .style('stroke', pointGroup.color)
