@@ -16,25 +16,18 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
   const setSvgRef = (node: SVGSVGElement | null) => {
     if (node && !graph.current) {
       // Check if node exists and graph is not already initialized
-      console.log('Initializing graph');
       graph.current = new LineGraph();
-      graph.current.initialize(node, false);
+      graph.current.initialize(node, false, [], [[2024, 10]]);
       graph.current.updatePoints = () => {
-        console.log('inside update points');
         if (graph.current) {
-          console.log(' graph.current.getPoints()', graph.current.getPoints());
           setPoints([...graph.current.getPoints().sort((a, b) => a[0] - b[0])]); // Update React state when D3 state changes
         }
       };
     }
   };
 
-  console.log('inside should re render', points);
-
   useEffect(() => {
-    console.log('the points changed');
     // if (svgRef.current) {
-    //   console.log('initializing graph');
     //   graph.current = new LineGraph();
     //   graph.current.initialize(svgRef.current);
     //   graph.current.update = () => {
@@ -81,7 +74,6 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
         ])
         .select();
       if (error) throw error;
-      console.log(data);
       const user_extrapolation_id = data[0].id;
 
       await supabase.from('extrapolation_values').insert(

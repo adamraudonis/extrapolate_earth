@@ -14,12 +14,28 @@ export default class LineGraph {
   private yScale: d3.ScaleLinear<number, number>;
   private xOff: number = 40;
   private yOff: number = 20;
+  private currentYear: number = 0;
+  // private minYear: number = 0;
+  private maxYear: number = 0;
+  private yearsToForecast: number = 50;
+  private minVal: number = 0;
+  private maxVal: number = 100;
 
   constructor() {
     this.line = d3.line();
     // Setup scales
-    this.xScale = d3.scaleLinear().domain([2024, 2074]).range([0, 800]);
-    this.yScale = d3.scaleLinear().domain([0, 100]).range([600, 0]);
+    this.currentYear = new Date().getFullYear();
+    // TODO: Make this earlier if there is a dataset
+    // this.minYear = this.currentYear;
+    this.maxYear = this.currentYear + this.yearsToForecast;
+    this.xScale = d3
+      .scaleLinear()
+      .domain([this.currentYear, this.maxYear])
+      .range([0, 800]);
+    this.yScale = d3
+      .scaleLinear()
+      .domain([this.minVal, this.maxVal])
+      .range([600, 0]);
   }
 
   initialize(
@@ -32,8 +48,8 @@ export default class LineGraph {
     this.points = points;
     this.svg = d3
       .select(svgElement)
-      .attr('width', 840) // Increase width to accommodate the margin
-      .attr('height', 640) // Increase height to accommodate the margin
+      .attr('width', 800 + this.xOff * 2) // Increase width to accommodate the margin
+      .attr('height', 600 + this.yOff * 2) // Increase height to accommodate the margin
       .style('border', '1px solid black');
 
     this.svg
@@ -64,6 +80,7 @@ export default class LineGraph {
         this.updatePoints();
       });
     }
+    this.updateGraph();
   }
 
   updatePointGroups(pointGroups: PointGroup[]) {
@@ -80,8 +97,8 @@ export default class LineGraph {
   }
 
   addPoint(point: [number, number]): void {
-    const pointX = Math.max(point[0], 2024);
-    const pointY = Math.max(point[1], 0);
+    const pointX = Math.max(Math.min(point[0], this.maxYear), this.currentYear);
+    const pointY = Math.max(Math.min(point[1], this.maxVal), this.minVal);
     const existingPointIndex = this.points.findIndex((p) => p[0] === pointX);
     if (existingPointIndex !== -1) {
       this.points[existingPointIndex] = [pointX, pointY];
