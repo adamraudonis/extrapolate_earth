@@ -112,7 +112,7 @@ export default class LineGraph {
     if (!this.svg) {
       return; // Guard clause if svg is null
     }
-
+    console.log('inside update graph', this.points.length);
     this.svg
       .selectAll('path.apath') // Select all path elements with class "apath"
       .remove(); // Remove all selected elements
@@ -142,6 +142,18 @@ export default class LineGraph {
       .style('fill', 'cyan')
       .style('stroke', 'black')
       .style('stroke-width', 1)
+      .on('click', (event, d) => {
+        event.stopPropagation();
+        const target = event.srcElement.__data__;
+        const index = this.points.findIndex(
+          (point) => point[0] === target[0] && point[1] === target[1]
+        );
+        if (index !== -1) {
+          this.points.splice(index, 1);
+        }
+        // Redraw the graph after removing the point
+        this.updateGraph();
+      })
       .raise(); // Move the circles to the top of the SVG element
 
     this.pointGroups.forEach((pointGroup, idx) => {
