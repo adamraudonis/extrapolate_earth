@@ -143,7 +143,6 @@ export default class LineGraph {
       .style('stroke', 'black')
       .style('stroke-width', 1)
       .on('click', (event, d) => {
-        event.stopPropagation();
         const target = event.srcElement.__data__;
         const index = this.points.findIndex(
           (point) => point[0] === target[0] && point[1] === target[1]

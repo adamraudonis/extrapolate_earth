@@ -36,9 +36,22 @@ const Header: React.FC = () => {
           alt="Logo"
           width={20}
           height={20}
-          style={{ marginRight: '10px', marginLeft: '10px' }}
+          style={{ marginRight: '10px', marginLeft: '10px', cursor: 'pointer' }}
+          onClick={() => {
+            console.log('clicked');
+            window.location.href = '/';
+          }}
         />
-        <Text fontSize={22}>Extrapolate Earth</Text>
+        <Text
+          fontSize={22}
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            console.log('clicked');
+            window.location.href = '/';
+          }}
+        >
+          Extrapolate Earth
+        </Text>
       </Flex>
       {user ? (
         <Box>

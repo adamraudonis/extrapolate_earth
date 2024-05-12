@@ -29,6 +29,7 @@ import AddExtrapolation from './components/AddExtrapolation';
 // import About from './components/About';
 import React from 'react';
 import { Routes, Route } from 'react-router-dom'; // Navigate
+import Header from './components/Header';
 
 // const PrivateRoute = ({ element, session, ...rest }: any) => {
 //   // redirect to home page if user is not authenticated
@@ -87,11 +88,13 @@ export default function App() {
     return <h1>Loading...</h1>;
   } else {
     return (
-      <Routes>
-        <Route path="/" element={<Home session={session} />} />
-        {/* <Route path="/about" element={<About />} /> */}
-        {/* TODO: Actually use private route */}
-        {/* <Route
+      <>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home session={session} />} />
+          {/* <Route path="/about" element={<About />} /> */}
+          {/* TODO: Actually use private route */}
+          {/* <Route
           path="/new_extrapolation"
           element={
             <PrivateRoute
@@ -100,16 +103,17 @@ export default function App() {
             />
           }
         /> */}
-        {/* <Route path="/extrapolation" element={<ExtrapolationPageWrapper />} /> */}
-        <Route
-          path="/new_extrapolation"
-          element={<NewExtrapolation session={session} />}
-        />
-        <Route
-          path="/add_extrapolation"
-          element={<AddExtrapolation session={session} />}
-        />
-      </Routes>
+          {/* <Route path="/extrapolation" element={<ExtrapolationPageWrapper />} /> */}
+          <Route
+            path="/new_extrapolation"
+            element={<NewExtrapolation session={session} />}
+          />
+          <Route
+            path="/add_extrapolation"
+            element={<AddExtrapolation session={session} />}
+          />
+        </Routes>
+      </>
     );
   }
 }

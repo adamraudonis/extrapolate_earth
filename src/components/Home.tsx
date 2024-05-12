@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Button } from '@chakra-ui/react';
 import ExtrapolationsList from './ExtrapolationsList';
-import Header from './Header';
 import SignUpForm from './SignUpForm';
 import OAuth from './OAuth';
 
@@ -13,7 +12,8 @@ const Home: React.FC<HomeProps> = ({ session }) => {
   return (
     <Box>
       {/* TODO: Move header to app.tsx */}
-      <Header />
+
+      {/* <p>Make predictions about the long term trends facing humanity</p> */}
       <SignUpForm />
       <OAuth session={session} />
       <ExtrapolationsList />
