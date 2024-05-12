@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: 'Gotham XLight';
+  src: url('../public/fonts/Gotham-XLight.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Thin';
+  src: url('../public/fonts/Gotham-Thin.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Light';
+  src: url('../public/fonts/Gotham-Light.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

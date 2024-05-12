@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { supabase } from '../supabaseClient';
+import '../index.css';
+// import { CgProfile } from "react-icons/cg";
+import { FaUser } from 'react-icons/fa';
 
 const Header: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -11,10 +14,10 @@ const Header: React.FC = () => {
     });
   }, []);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-  };
+  // const handleSignOut = async () => {
+  //   await supabase.auth.signOut();
+  //   setUser(null);
+  // };
 
   return (
     <Flex
@@ -22,16 +25,35 @@ const Header: React.FC = () => {
       alignItems="center"
       p={4}
       bg="blue.500"
+      borderBottom="1px solid lightgray"
+      fontFamily="Gotham Light"
+      color="#53585F"
+      height="32px"
     >
-      <Text fontSize="lg" fontWeight="bold">
-        Extrapolate Earth
-      </Text>
+      <Flex alignItems="center">
+        <img
+          src="logo192.png"
+          alt="Logo"
+          width={20}
+          height={20}
+          style={{ marginRight: '10px', marginLeft: '10px' }}
+        />
+        <Text fontSize={22}>Extrapolate Earth</Text>
+      </Flex>
       {user ? (
         <Box>
-          <Text fontSize="md">Signed in as {user.email}</Text>
-          <Button colorScheme="blue" variant="outline" onClick={handleSignOut}>
-            Sign out
-          </Button>
+          <div
+            style={{
+              color: 'darkgrey',
+              border: '1px solid grey',
+              borderRadius: '4px',
+              padding: '4px',
+              paddingBottom: '2px',
+              marginRight: '10px',
+            }}
+          >
+            <FaUser />
+          </div>
         </Box>
       ) : (
         <Button colorScheme="blue" variant="solid">
