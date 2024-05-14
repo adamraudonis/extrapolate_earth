@@ -85,11 +85,12 @@ export default function App() {
   }, []);
 
   if (!isDone) {
+    // TODO: Remove this blocking loading step.
     return <h1>Loading...</h1>;
   } else {
     return (
       <>
-        <Header />
+        <Header session={session} />
         <Routes>
           <Route path="/" element={<Home session={session} />} />
           {/* <Route path="/about" element={<About />} /> */}

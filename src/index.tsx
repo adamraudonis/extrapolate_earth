@@ -4,6 +4,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
+import { theme } from '@chakra-ui/pro-theme';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+const proTheme = extendTheme(theme);
+const extendedConfig = {
+  colors: { ...proTheme.colors, brand: proTheme.colors.blue },
+};
+const myTheme = extendTheme(extendedConfig, proTheme);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -11,7 +18,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <ChakraProvider theme={myTheme}>
+        <App />
+      </ChakraProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

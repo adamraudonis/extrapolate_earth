@@ -1,50 +1,86 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  Flex,
+  Text,
+  Menu,
+  MenuItem,
+  MenuButton,
+  IconButton,
+  MenuList,
+  Modal,
+  ModalOverlay,
+  Spacer,
+  Image,
+} from '@chakra-ui/react';
+
 import { supabase } from '../supabaseClient';
 import '../index.css';
 // import { CgProfile } from "react-icons/cg";
 import { FaUser } from 'react-icons/fa';
+import { SignUpOrLoginWithEmailOrGoogle } from './SignUpOrLoginWithEmailOrGoogle';
 
-const Header: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
+type HeaderProps = {
+  session: any;
+};
 
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-  }, []);
+const Header: React.FC<HeaderProps> = ({ session }) => {
+  // const [user, setUser] = useState<any>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLogIn, setIsLogIn] = useState(true);
+
+  // const [signUpisOpen, setSignUpisOpen] = useState(false);
+
+  // useEffect(() => {
+  //   supabase.auth.onAuthStateChange((_event, session) => {
+  //     setUser(session?.user ?? null);
+  //   });
+  // }, []);
 
   // const handleSignOut = async () => {
   //   await supabase.auth.signOut();
   //   setUser(null);
   // };
 
+  // <Flex
+  //   // justifyContent="space-between"
+  //   // alignItems="center"
+  //   p={4}
+  //   // bg="blue.500"
+  //   borderBottom="1px solid lightgray"
+  //   height="40px"
+  //   alignItems="center"
+  // >
   return (
     <Flex
-      justifyContent="space-between"
+      minWidth="max-content"
       alignItems="center"
-      p={4}
-      bg="blue.500"
       borderBottom="1px solid lightgray"
-      fontFamily="Gotham Light"
-      color="#53585F"
-      height="32px"
     >
-      <Flex alignItems="center">
-        <img
-          src="logo192.png"
-          alt="Logo"
-          width={20}
-          height={20}
-          style={{ marginRight: '10px', marginLeft: '10px', cursor: 'pointer' }}
-          onClick={() => {
-            console.log('clicked');
-            window.location.href = '/';
-          }}
-        />
+      <Image
+        src="logo192.png"
+        alt="Logo"
+        boxSize="20px"
+        // width={20}
+        // height={20}
+        style={{ marginRight: '10px', marginLeft: '10px', cursor: 'pointer' }}
+        onClick={() => {
+          console.log('clicked');
+          window.location.href = '/';
+        }}
+      />
+      <Box>
         <Text
           fontSize={22}
-          style={{ cursor: 'pointer' }}
+          style={{
+            cursor: 'pointer',
+            fontFamily: 'Gotham Light',
+            color: '#53585F',
+            // display: 'flex',
+            // alignItems: 'center',
+            // justifyContent: 'center',
+          }}
           onClick={() => {
             console.log('clicked');
             window.location.href = '/';
@@ -52,27 +88,79 @@ const Header: React.FC = () => {
         >
           Extrapolate Earth
         </Text>
-      </Flex>
-      {user ? (
-        <Box>
-          <div
+      </Box>
+      <Spacer />
+      {session?.user ? (
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label="Options"
+            icon={<FaUser />}
+            variant="outline"
+            size="xsm"
+            style={{ marginLeft: '10px', padding: '4px' }}
+          />
+          <MenuList>
+            <MenuItem
+              onClick={async () => {
+                await supabase.auth.signOut();
+              }}
+            >
+              Sign Out
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      ) : (
+        <>
+          <Button
+            variant="outline"
+            size="xsm"
+            onClick={async () => {
+              setIsLogIn(true);
+              setIsOpen(true);
+            }}
             style={{
-              color: 'darkgrey',
-              border: '1px solid grey',
-              borderRadius: '4px',
-              padding: '4px',
-              paddingBottom: '2px',
               marginRight: '10px',
+              paddingTop: '2px',
+              paddingBottom: '2px',
+              fontSize: '13px',
+
+              paddingLeft: '10px',
+              paddingRight: '10px',
             }}
           >
-            <FaUser />
-          </div>
-        </Box>
-      ) : (
-        <Button colorScheme="blue" variant="solid">
-          Sign in
-        </Button>
+            Sign In
+          </Button>
+          <Button
+            variant="outline"
+            size="xsm"
+            onClick={async () => {
+              setIsLogIn(false);
+              setIsOpen(true);
+            }}
+            style={{
+              marginRight: '10px',
+              paddingTop: '2px',
+              paddingBottom: '2px',
+              fontSize: '13px',
+              paddingLeft: '10px',
+              paddingRight: '10px',
+            }}
+          >
+            Sign Up
+          </Button>
+        </>
       )}
+
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      >
+        <ModalOverlay />
+        <SignUpOrLoginWithEmailOrGoogle isLogInProp={isLogIn} />
+      </Modal>
     </Flex>
   );
 };
