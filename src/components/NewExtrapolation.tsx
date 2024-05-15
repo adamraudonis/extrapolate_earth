@@ -4,7 +4,7 @@ import {
   Button,
   FormControl,
   FormLabel,
-  // Input,
+  Input,
   Textarea,
   // Text,
   // VStack,
@@ -30,6 +30,10 @@ const NewExtrapolation: React.FC<NewExtrapolationProps> = () => {
   const [extrapolation_text, setExtrapolationText] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [unit, setUnit] = useState('');
+  const [initialYearValue, setInitialYearValue] = useState(0);
+  const [minimum, setMinimum] = useState(0);
+  const [maximum, setMaximum] = useState(0);
 
   const [user, setUser] = useState<null | { id: string }>(null);
 
@@ -52,8 +56,11 @@ const NewExtrapolation: React.FC<NewExtrapolationProps> = () => {
       const { error } = await supabase.from('extrapolation_prompt').insert({
         user_id: user.id,
         extrapolation_text: extrapolation_text,
-        unit: 'none',
+        unit,
         is_active: true,
+        initialYearValue,
+        minimum,
+        maximum,
       });
 
       if (error) throw error;
@@ -77,23 +84,61 @@ const NewExtrapolation: React.FC<NewExtrapolationProps> = () => {
   // }
 
   return (
-    <Box p={4}>
+    <Box p={4} mx="auto" width={500}>
       <form onSubmit={handleExtrapolationSubmit}>
         <FormControl id={'extrapolation_text'} isRequired>
           <FormLabel>Extrapolation Prompt</FormLabel>
           <Textarea
+            placeholder="The number of humanoid robots manufactured per year globally"
             value={extrapolation_text}
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setExtrapolationText(e.target.value)
             }
           />
         </FormControl>
+
+        <FormControl id={'unit'} isRequired>
+          <FormLabel>Y-Axis Unit</FormLabel>
+          <Input
+            type="string"
+            placeholder="Number of Robots"
+            onChange={(e) => setUnit(e.target.value)}
+          />
+        </FormControl>
+
+        <FormControl id={'initial_year_value'} isRequired>
+          <FormLabel>Current Year's Value</FormLabel>
+          <Input
+            type="number"
+            placeholder="100"
+            onChange={(e) => setInitialYearValue(parseFloat(e.target.value))}
+          />
+        </FormControl>
+
+        <FormControl id={'minimum'}>
+          <FormLabel>Minimum</FormLabel>
+          <Input
+            type="number"
+            placeholder="0"
+            onChange={(e) => setMinimum(parseFloat(e.target.value))}
+          />
+        </FormControl>
+
+        <FormControl id={'maximum'}>
+          <FormLabel>Maximum</FormLabel>
+          <Input
+            type="number"
+            placeholder="1000000"
+            onChange={(e) => setMaximum(parseFloat(e.target.value))}
+          />
+        </FormControl>
+
         {error && (
           <Box color="red.500" mt={2}>
             {error}
           </Box>
         )}
-        <Button mt={4} colorScheme="teal" isLoading={loading} type="submit">
+        <Button mt={4} isLoading={loading} type="submit">
           Submit
         </Button>
       </form>
