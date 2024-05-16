@@ -55,13 +55,14 @@ const NewExtrapolation: React.FC<NewExtrapolationProps> = () => {
       setLoading(true);
       const { error } = await supabase.from('extrapolation_prompt').insert({
         user_id: user.id,
-        extrapolation_text: extrapolation_text,
+        extrapolation_text,
         unit,
         is_active: true,
-        initialYearValue,
+        initial_year_value: initialYearValue,
         minimum,
         maximum,
       });
+      // TODO: Get the id back
 
       if (error) throw error;
       console.log('Extrapolation submitted successfully.');
@@ -71,7 +72,7 @@ const NewExtrapolation: React.FC<NewExtrapolationProps> = () => {
     } finally {
       setLoading(false);
     }
-    // TODO: Go back to the extrapolations list
+    // TODO: Go back to add extrapolation page
   };
 
   // TODO: Re-enable auth

@@ -35,7 +35,10 @@ async function createTables() {
       user_id UUID REFERENCES auth.users(id),
       unit TEXT NOT NULL,
       is_active BOOLEAN NOT NULL,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      minimum NUMERIC,
+      maximum NUMERIC,
+      initial_year_value NUMERIC
     );
   `;
 
