@@ -53,20 +53,25 @@ const NewExtrapolation: React.FC<NewExtrapolationProps> = () => {
     }
     try {
       setLoading(true);
-      const { error } = await supabase.from('extrapolation_prompt').insert({
-        user_id: user.id,
-        extrapolation_text,
-        unit,
-        is_active: true,
-        initial_year_value: initialYearValue,
-        minimum,
-        maximum,
-      });
+      const { data, error } = await supabase
+        .from('extrapolation_prompt')
+        .insert({
+          user_id: user.id,
+          extrapolation_text,
+          unit,
+          is_active: true,
+          initial_year_value: initialYearValue,
+          minimum,
+          maximum,
+        })
+        .select();
+      if (error) {
+        throw new Error(error.message);
+      }
+      const id = data?.[0]?.id;
+      console.log('Extrapolation submitted successfully. ID:', id);
       // TODO: Get the id back
-
-      if (error) throw error;
-      console.log('Extrapolation submitted successfully.');
-      setExtrapolationText(extrapolation_text);
+      window.location.href = `/add_extrapolation?id=${id}`;
     } catch (error: any) {
       setError(error.error_description || error.message);
     } finally {
