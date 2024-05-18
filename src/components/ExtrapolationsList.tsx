@@ -38,7 +38,7 @@ const ExtrapolationsList: React.FC = () => {
   if (extrapolations.length === 0) return <Box>No extrapolations found.</Box>;
 
   return (
-    <Box>
+    <Box display="flex" justifyContent="center">
       <List spacing={3}>
         {extrapolations.map((extrapolation) => (
           <ListItem key={extrapolation.id}>
