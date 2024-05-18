@@ -38,8 +38,9 @@ const ExtrapolationsList: React.FC = () => {
   if (extrapolations.length === 0) return <Box>No extrapolations found.</Box>;
 
   return (
-    <Box>
-      <List spacing={3}>
+    // Center the list of extrapolations using Chakra UI's Box component with flex display
+    <Box display="flex" justifyContent="center">
+      <List spacing={3} style={{ width: '100%' }}>
         {extrapolations.map((extrapolation) => (
           <ListItem key={extrapolation.id}>
             <Extrapolation extrapolationPrompt={extrapolation}></Extrapolation>
