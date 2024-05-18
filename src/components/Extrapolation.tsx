@@ -56,6 +56,8 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
       });
       console.log(pointGroups);
       graph.current?.updatePointGroups(pointGroups);
+      // TODO: Fix these axes
+      graph.current?.updateMinMax(0, 100);
     };
     fetchData();
   }, [extrapolationPrompt.id]);

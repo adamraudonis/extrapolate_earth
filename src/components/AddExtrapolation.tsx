@@ -7,68 +7,92 @@ type AddExtrapolationProps = {
   session: any;
 };
 
-const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
+const AddExtrapolation: React.FC<AddExtrapolationProps> = (session: any) => {
   // const svgRef = useRef<SVGSVGElement>(null);ss
   const [points, setPoints] = useState<[number, number][]>([]);
   const graph = useRef<LineGraph | null>(null);
+  const [extrapolationPrompt, setExtrapolationPrompt] = useState<any>(null);
 
   // Callback ref to handle SVG initialization immediately when the element is mounted
-  const setSvgRef = (node: SVGSVGElement | null) => {
-    if (node && !graph.current) {
+  const setSvgRef = async (node: SVGSVGElement | null) => {
+    if (extrapolationPrompt && node && !graph.current) {
       // Check if node exists and graph is not already initialized
+
+      // if (error) throw error;
+
       graph.current = new LineGraph();
-      graph.current.initialize(node, false, [], [[2024, 10]]);
+      const currentYear = new Date().getFullYear();
+      // extrapolationPrompt.initial_year_value
+      console.log('inside: ', extrapolationPrompt.initial_year_value);
+      graph.current.initialize(
+        node,
+        false,
+        [],
+        [[currentYear, extrapolationPrompt.initial_year_value]]
+      );
+      graph.current.updateMinMax(
+        extrapolationPrompt.minimum,
+        extrapolationPrompt.maximum
+      );
       graph.current.updatePoints = () => {
         if (graph.current) {
           setPoints([...graph.current.getPoints().sort((a, b) => a[0] - b[0])]); // Update React state when D3 state changes
         }
       };
+      graph.current.updateGraph();
     }
   };
 
-  useEffect(() => {
-    // if (svgRef.current) {
-    //   graph.current = new LineGraph();
-    //   graph.current.initialize(svgRef.current);
-    //   graph.current.update = () => {
-    //     // Override update method to include state setting
-    //     if (graph.current) {
-    //       setPoints(graph.current.getPoints()); // Update React state when D3 state changes
-    //     }
-    //   };
-    // }
-  }, [points]);
-
-  // TODO: Get the url param for example:
-  // http://localhost:3000/add_extrapolation?id=6
-  const urlParams = new URLSearchParams(window.location.search);
-  const { id } = Object.fromEntries(urlParams.entries());
-  const extrapolationPromptId = id;
+  // useEffect(() => {
+  //   // if (svgRef.current) {
+  //   //   graph.current = new LineGraph();
+  //   //   graph.current.initialize(svgRef.current);
+  //   //   graph.current.update = () => {
+  //   //     // Override update method to include state setting
+  //   //     if (graph.current) {
+  //   //       setPoints(graph.current.getPoints()); // Update React state when D3 state changes
+  //   //     }
+  //   //   };
+  //   // }
+  // }, [points]);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // const [error, setError] = useState('');
 
-  const [user, setUser] = useState<null | { id: string }>(null);
+  // const [user, setUser] = useState<null | { id: string }>(null);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+    // supabase.auth.onAuthStateChange((_event, session) => {
+    //   setUser(session?.user ?? null);
+    // });
+
+    // http://localhost:3000/add_extrapolation?id=6
+    const urlParams = new URLSearchParams(window.location.search);
+    const { id } = Object.fromEntries(urlParams.entries());
+    const fetchExtraPolationPrompt = async (extrapolationPromptId: number) => {
+      const { data, error } = await supabase
+        .from('extrapolation_prompt')
+        .select('*')
+        .eq('id', extrapolationPromptId);
+      if (error) throw error;
+      setExtrapolationPrompt(data[0]);
+    };
+    fetchExtraPolationPrompt(parseInt(id));
   }, []);
 
   const handleExtrapolationSubmit = async () => {
-    if (!user) {
-      setError('You must be logged in to submit a extrapolation.');
-      return;
-    }
+    // if (!user) {
+    //   setError('You must be logged in to submit a extrapolation.');
+    //   return;
+    // }
     try {
       setLoading(true);
       const { data, error } = await supabase
         .from('user_extrapolation')
         .insert([
           {
-            user_id: user.id,
-            extrapolation_prompt_id: extrapolationPromptId,
+            user_id: session.user.id,
+            extrapolation_prompt_id: extrapolationPrompt.id,
             is_active: true,
           },
         ])
@@ -79,10 +103,10 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
       await supabase.from('extrapolation_values').insert(
         points.map((point) => ({
           user_extrapolation_id: user_extrapolation_id,
-          extrapolation_prompt_id: extrapolationPromptId,
+          extrapolation_prompt_id: extrapolationPrompt.id,
           year: point[0],
           value: point[1],
-          user_id: user.id,
+          user_id: session.user.id,
         }))
       );
       if (error) throw error;
@@ -114,13 +138,13 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
   //   setExtrapolations(newExtrapolations);
   // };
 
-  if (!user) {
-    return (
-      <Box p={4}>
-        <Text>You must be logged in to submit a extrapolation.</Text>
-      </Box>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <Box p={4}>
+  //       <Text>You must be logged in to submit a extrapolation.</Text>
+  //     </Box>
+  //   );
+  // }
 
   return (
     <Box
@@ -132,6 +156,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
       }}
     >
       <Box>
+        <Text>{extrapolationPrompt?.extrapolation_text}</Text>
         <svg ref={setSvgRef}></svg>
 
         <div>
@@ -162,7 +187,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = () => {
             >
               Submit Extrapolations
             </Button>
-            {error && <Box color="red.500">{error}</Box>}
+            {/* {error && <Box color="red.500">{error}</Box>} */}
           </div>
         </div>
       </Box>

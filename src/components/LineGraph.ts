@@ -12,7 +12,7 @@ export default class LineGraph {
   private line: d3.Line<[number, number]>;
   private xScale: d3.ScaleLinear<number, number>;
   private yScale: d3.ScaleLinear<number, number>;
-  private xOff: number = 40;
+  private xOff: number = 80;
   private yOff: number = 20;
   private currentYear: number = 0;
   // private minYear: number = 0;
@@ -32,11 +32,25 @@ export default class LineGraph {
       .scaleLinear()
       .domain([this.currentYear, this.maxYear])
       .range([0, 800]);
-    this.yScale = d3
-      .scaleLinear()
-      .domain([this.minVal, this.maxVal])
-      .range([600, 0]);
+    this.yScale = d3.scaleLinear().domain([0, 1]).range([600, 0]);
   }
+
+  // constructor() {
+  //   this.line = d3.line();
+  //   // Setup scales
+  //   this.currentYear = new Date().getFullYear();
+  //   // TODO: Make this earlier if there is a dataset
+  //   // this.minYear = this.currentYear;
+  //   this.maxYear = this.currentYear + this.yearsToForecast;
+  //   this.xScale = d3
+  //     .scaleLinear()
+  //     .domain([this.currentYear, this.maxYear])
+  //     .range([0, 800]);
+  //   this.yScale = d3
+  //     .scaleLinear()
+  //     .domain([this.minVal, this.maxVal])
+  //     .range([600, 0]);
+  // }
 
   initialize(
     svgElement: SVGSVGElement,
@@ -52,19 +66,20 @@ export default class LineGraph {
       .attr('height', 600 + this.yOff * 2) // Increase height to accommodate the margin
       .style('border', '1px solid black');
 
-    this.svg
-      .append('g') // Append a group element for the plot area
-      // Apply a translation to create the margin
-      .attr(
-        'transform',
-        `translate(${this.xOff}, ${this.yScale(0) + this.yOff})`
-      )
-      .call(d3.axisBottom(this.xScale).tickFormat(d3.format('d')));
+    // this.svg
+    //   .append('g') // Append a group element for the plot area
+    //   // Apply a translation to create the margin
+    //   .attr(
+    //     'transform',
+    //     `translate(${this.xOff}, ${this.yScale(0) + this.yOff})`
+    //   )
+    //   .call(d3.axisBottom(this.xScale).tickFormat(d3.format('d')));
 
-    this.svg
-      .append('g') // Append a group element for the plot area
-      .attr('transform', `translate(${this.xOff}, ${this.yOff})`) // Apply a translation to create the margin
-      .call(d3.axisLeft(this.yScale));
+    // this.svg
+    //   .append('g') // Append a group element for the plot area
+    //   .attr('transform', `translate(${this.xOff}, ${this.yOff})`) // Apply a translation to create the margin
+    //   .attr('class', 'yaxis')
+    //   .call(d3.axisLeft(this.yScale));
 
     if (!isReadOnly) {
       this.svg.on('click', (event: MouseEvent) => {
@@ -83,7 +98,48 @@ export default class LineGraph {
     this.updateGraph();
   }
 
+  updateMinMax(minVal: number, maxVal: number) {
+    this.minVal = minVal;
+    this.maxVal = maxVal;
+    this.xScale = d3
+      .scaleLinear()
+      .domain([this.currentYear, this.maxYear])
+      .range([0, 800]);
+    this.yScale = d3
+      .scaleLinear()
+      .domain([this.minVal, this.maxVal])
+      .range([600, 0]);
+
+    if (this.svg) {
+      console.log('inside update min max', [this.minVal, this.maxVal]);
+
+      this.svg
+        .selectAll('.xaxis') // Select all path elements with class "apath"
+        .remove(); // Remove all selected elements
+
+      this.svg
+        .append('g') // Append a group element for the plot area
+        .attr('class', 'xaxis')
+        .attr(
+          'transform',
+          `translate(${this.xOff}, ${this.yScale(0) + this.yOff})`
+        )
+        .call(d3.axisBottom(this.xScale).tickFormat(d3.format('d')));
+
+      this.svg
+        .selectAll('.yaxis') // Select all path elements with class "apath"
+        .remove(); // Remove all selected elements
+
+      this.svg
+        .append('g') // Append a group element for the plot area
+        .attr('transform', `translate(${this.xOff}, ${this.yOff})`) // Apply a translation to create the margin
+        .attr('class', 'yaxis')
+        .call(d3.axisLeft(this.yScale));
+    }
+  }
+
   updatePointGroups(pointGroups: PointGroup[]) {
+    // TODO: Adjust the scales based on min/max
     this.pointGroups = pointGroups;
     this.updateGraph();
   }
