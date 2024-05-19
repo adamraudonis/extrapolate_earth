@@ -5,10 +5,21 @@ import { ExtrapolationPrompt, ExtrapolationValue, PointGroup } from '../types';
 import LineGraph from './LineGraph';
 // import { v4 as uuidv4 } from 'uuid';
 
-type UserExtrapolation = {
+// type UserExtrapolation = {
+//   id: string;
+//   user_id: string;
+//   created_at: string;
+//   extrapolation_values: ExtrapolationValue[];
+// };
+
+type UserExtrapolationResponse = {
   id: string;
   user_id: string;
   created_at: string;
+  extrapolation_prompt: {
+    minimum: number;
+    maximum: number;
+  };
   extrapolation_values: ExtrapolationValue[];
 };
 
@@ -23,7 +34,7 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
   //   ExtrapolationValue[]
   // >([]);
   const [userExtrapolations, setUserExtrapolations] = useState<
-    UserExtrapolation[]
+    UserExtrapolationResponse[]
   >([]);
   //   const [error, setError] = useState('');
   const graph = useRef<LineGraph | null>(null);
@@ -40,11 +51,29 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
     const fetchData = async () => {
       const { data, error } = await supabase
         .from('user_extrapolation')
-        .select('id, user_id, created_at, extrapolation_values (year, value)')
+        .select(
+          'id, user_id, created_at, extrapolation_prompt( minimum, maximum ), extrapolation_values (year, value)'
+        )
         .eq('is_active', true)
         .eq('extrapolation_prompt_id', extrapolationPrompt.id);
+      console.log(data, error);
       if (error) throw error;
-      setUserExtrapolations(data as UserExtrapolation[]);
+
+      // I wonder if there is a bug with supabase for types here as
+      // the data returned is like:
+      // [
+      //   {
+      //     created_at: "2024-05-19T06:29:41.488927+00:00"
+      //     extrapolation_prompt:{maximum: 10000, minimum: 0}
+      //     extrapolation_values:  [{…}, {…}, {…}, {…}, {…}]
+      //     id: 0
+      //     user_id: "..."
+      //   }
+      // ]
+      // However it seems to want an array of extrapolation_prompt
+
+      // @ts-ignore
+      setUserExtrapolations(data as UserExtrapolationResponse[]);
       const pointGroups: PointGroup[] = data.map((d) => {
         return {
           // id: uuidv4(),
@@ -56,8 +85,13 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
       });
       console.log(pointGroups);
       graph.current?.updatePointGroups(pointGroups);
-      // TODO: Fix these axes
-      graph.current?.updateMinMax(0, 100);
+      // TODO eventually get min/max from point groups instead of extrapolation prompt
+      graph.current?.updateMinMax(
+        // @ts-ignore
+        data[0].extrapolation_prompt.minimum,
+        // @ts-ignore
+        data[0].extrapolation_prompt.maximum
+      );
     };
     fetchData();
   }, [extrapolationPrompt.id]);

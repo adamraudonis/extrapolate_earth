@@ -109,13 +109,13 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                           isClosable: true,
                         });
                       } finally {
-                        toast({
-                          title: 'Logging In',
-                          description: "We're logging you in!",
-                          status: 'error',
-                          duration: 1000,
-                          isClosable: true,
-                        });
+                        // toast({
+                        //   title: 'Logging In',
+                        //   description: "We're logging you in!",
+                        //   status: 'error',
+                        //   duration: 1000,
+                        //   isClosable: true,
+                        // });
                       }
                     }}
                   >

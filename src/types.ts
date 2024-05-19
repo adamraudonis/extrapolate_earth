@@ -2,6 +2,8 @@ export type ExtrapolationPrompt = {
   id: number;
   extrapolation_text: string;
   user_id: string;
+  // minimum: number;
+  // maximum: number;
 };
 
 export type ExtrapolationValue = {

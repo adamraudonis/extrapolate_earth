@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Button, Text } from '@chakra-ui/react';
+import { Box, Button, Text, useToast } from '@chakra-ui/react';
 import { supabase } from '../supabaseClient';
 import LineGraph from './LineGraph';
 
@@ -7,11 +7,12 @@ type AddExtrapolationProps = {
   session: any;
 };
 
-const AddExtrapolation: React.FC<AddExtrapolationProps> = (session: any) => {
+const AddExtrapolation: React.FC<AddExtrapolationProps> = ({ session }) => {
   // const svgRef = useRef<SVGSVGElement>(null);ss
   const [points, setPoints] = useState<[number, number][]>([]);
   const graph = useRef<LineGraph | null>(null);
   const [extrapolationPrompt, setExtrapolationPrompt] = useState<any>(null);
+  const toast = useToast();
 
   // Callback ref to handle SVG initialization immediately when the element is mounted
   const setSvgRef = async (node: SVGSVGElement | null) => {
@@ -56,7 +57,6 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = (session: any) => {
   //   // }
   // }, [points]);
 
-  const [loading, setLoading] = useState(false);
   // const [error, setError] = useState('');
 
   // const [user, setUser] = useState<null | { id: string }>(null);
@@ -86,7 +86,15 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = (session: any) => {
     //   return;
     // }
     try {
-      setLoading(true);
+      if (!extrapolationPrompt) {
+        throw new Error('Extrapolation prompt not found.');
+      }
+      console.log(session);
+      console.log(session.user);
+      console.log(session.user.id);
+      if (!session.user) {
+        throw new Error('You must be logged in to submit a extrapolation.');
+      }
       const { data, error } = await supabase
         .from('user_extrapolation')
         .insert([
@@ -110,11 +118,21 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = (session: any) => {
         }))
       );
       if (error) throw error;
-      alert('Extrapolation submitted successfully.');
+      toast({
+        title: 'Extrapolation submitted successfully!',
+        description: '',
+        status: 'success',
+        duration: 1000,
+        isClosable: true,
+      });
     } catch (error: any) {
-      // setError(error.error_description || error.message);
-    } finally {
-      setLoading(false);
+      toast({
+        title: 'Error',
+        description: error.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -182,7 +200,6 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = (session: any) => {
             <Button
               mt={4}
               colorScheme="teal"
-              isLoading={loading}
               onClick={() => handleExtrapolationSubmit()}
             >
               Submit Extrapolations
