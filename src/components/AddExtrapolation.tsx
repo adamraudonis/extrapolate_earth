@@ -17,7 +17,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = ({ session }) => {
   // Callback ref to handle SVG initialization immediately when the element is mounted
   const setSvgRef = async (node: SVGSVGElement | null) => {
     if (extrapolationPrompt && node && !graph.current) {
-      graph.current = new LineGraph(800, 600);
+      graph.current = new LineGraph(true, 800, 600);
       const currentYear = new Date().getFullYear();
       graph.current.initialize(
         node,

@@ -22,12 +22,16 @@ export default class LineGraph {
   private maxVal: number = 100;
   private width: number = 800;
   private height: number = 600;
+  private hoverIndex: number = -1;
+  private selectedCircle: any = null;
+  private dragged: boolean = false;
+  private editable: boolean = false;
 
-  constructor(width: number, height: number) {
+  constructor(editable: boolean, width: number, height: number) {
+    this.editable = editable;
     this.width = width;
     this.height = height;
     this.line = d3.line();
-    // Setup scales
     this.currentYear = new Date().getFullYear();
     // TODO: Make this earlier if there is a dataset
     // this.minYear = this.currentYear;
@@ -158,31 +162,102 @@ export default class LineGraph {
       .style('stroke', 'black')
       .style('stroke-width', 2);
 
-    this.svg
-      .selectAll('circle')
-      .data(this.points)
-      .join('circle')
-      .attr('cx', (d) => this.xScale(d[0]) + this.xOff)
-      .attr('cy', (d) => this.yScale(d[1]) + this.yOff)
-      .attr('r', 5)
-      .style('fill', 'cyan')
-      .style('stroke', 'black')
-      .style('stroke-width', 1)
-      .on('click', (event, d) => {
-        event.stopPropagation();
+    const drag = d3
+      .drag()
+      .on('start', (event, d) => {
+        this.dragged = false;
+        const target = event.sourceEvent.target;
+        const targetData = target.__data__;
 
-        const target = event.srcElement.__data__;
-        const index = this.points.findIndex(
-          (point) => point[0] === target[0] && point[1] === target[1]
+        d3.select(target).raise();
+        // Using a css class didn't seem to work
+        // .classed('activeCircle', true)
+
+        this.hoverIndex = this.points.findIndex(
+          (point) => point[0] === targetData[0] && point[1] === targetData[1]
         );
 
-        if (index !== -1) {
-          this.points.splice(index, 1);
+        this.selectedCircle = target;
+      })
+      .on('drag', (event, d) => {
+        this.dragged = true;
+        if (!this.svg) {
+          return; // Guard clause if svg is null
         }
-        // Redraw the graph after removing the point
+        const [x, y] = d3.pointer(event, this.svg.node());
+        const year = Math.round(this.xScale.invert(x - this.xOff));
+        const value = this.yScale.invert(y - this.yOff);
+        const pt_x = Math.max(Math.min(year, this.maxYear), this.currentYear);
+        const pt_y = Math.max(Math.min(value, this.maxVal), this.minVal);
+        d3.select(this.selectedCircle)
+          .attr('cx', this.xScale(pt_x) + this.xOff)
+          .attr('cy', this.yScale(pt_y) + this.yOff);
+
+        if (this.hoverIndex !== -1) {
+          this.points[this.hoverIndex] = [pt_x, pt_y];
+        }
         this.updateGraph();
       })
-      .raise(); // Move the circles to the top of the SVG element
+      .on('end', (event, d) => {
+        // d3.select(event.sourceEvent.target).classed('activeCircle', false);
+
+        if (!this.dragged) {
+          if (this.hoverIndex !== -1) {
+            this.points.splice(this.hoverIndex, 1);
+          }
+        }
+        // Ensure that after dragging there is not any
+        // issue with the order of the points
+        this.points.sort((a, b) => a[0] - b[0]);
+
+        // Ensure that after dragging we cannot have two points
+        // with the same x value
+        const uniquePoints = Array.from(
+          new Set(this.points.map((point) => point[0]))
+        );
+        const duplicatePoints = uniquePoints.filter(
+          (point) => this.points.filter((p) => p[0] === point).length > 1
+        );
+        duplicatePoints.forEach((point) => {
+          const duplicateIndex = this.points.findIndex(
+            (p) => p[0] === point && this.points.indexOf(p) !== this.hoverIndex
+          );
+          if (duplicateIndex !== -1) {
+            this.points.splice(duplicateIndex, 1);
+          }
+        });
+        this.dragged = false;
+        this.hoverIndex = -1;
+        this.updateGraph();
+      });
+
+    if (this.editable) {
+      this.svg
+        .selectAll('circle')
+        .data(this.points)
+        .join('circle')
+        .attr('cx', (d) => this.xScale(d[0]) + this.xOff)
+        .attr('cy', (d) => this.yScale(d[1]) + this.yOff)
+        .attr('r', 5)
+        .style('fill', 'cyan')
+        .style('stroke', 'black')
+        .style('stroke-width', 1)
+        // @ts-ignore
+        .call(drag)
+        .raise();
+    } else {
+      this.svg
+        .selectAll('circle')
+        .data(this.points)
+        .join('circle')
+        .attr('cx', (d) => this.xScale(d[0]) + this.xOff)
+        .attr('cy', (d) => this.yScale(d[1]) + this.yOff)
+        .attr('r', 5)
+        .style('fill', 'cyan')
+        .style('stroke', 'black')
+        .style('stroke-width', 1)
+        .raise();
+    }
 
     this.pointGroups.forEach((pointGroup, idx) => {
       if (!this.svg) {

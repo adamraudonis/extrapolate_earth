@@ -42,7 +42,7 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
   const setSvgRef = (node: SVGSVGElement | null) => {
     if (node && !graph.current) {
       // Check if node exists and graph is not already initialized
-      graph.current = new LineGraph(400, 300);
+      graph.current = new LineGraph(false, 400, 300);
       graph.current.initialize(node, true);
     }
   };
