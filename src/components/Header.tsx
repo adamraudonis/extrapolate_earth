@@ -66,7 +66,6 @@ const Header: React.FC<HeaderProps> = ({ session }) => {
         // height={20}
         style={{ marginRight: '10px', marginLeft: '10px', cursor: 'pointer' }}
         onClick={() => {
-          console.log('clicked');
           window.location.href = '/';
         }}
       />
@@ -82,7 +81,6 @@ const Header: React.FC<HeaderProps> = ({ session }) => {
             // justifyContent: 'center',
           }}
           onClick={() => {
-            console.log('clicked');
             window.location.href = '/';
           }}
         >
@@ -98,7 +96,7 @@ const Header: React.FC<HeaderProps> = ({ session }) => {
             icon={<FaUser />}
             variant="outline"
             size="xsm"
-            style={{ marginLeft: '10px', padding: '4px' }}
+            style={{ marginLeft: '10px', marginRight: '10px', padding: '4px' }}
           />
           <MenuList>
             <MenuItem

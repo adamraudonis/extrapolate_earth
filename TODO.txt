@@ -1,0 +1,4 @@
+TODO:
+
+- Fix login with password redirect
+- Fix login with password and google toast

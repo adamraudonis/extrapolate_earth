@@ -42,7 +42,7 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
   const setSvgRef = (node: SVGSVGElement | null) => {
     if (node && !graph.current) {
       // Check if node exists and graph is not already initialized
-      graph.current = new LineGraph();
+      graph.current = new LineGraph(400, 300);
       graph.current.initialize(node, true);
     }
   };
@@ -56,7 +56,7 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
         )
         .eq('is_active', true)
         .eq('extrapolation_prompt_id', extrapolationPrompt.id);
-      console.log(data, error);
+
       if (error) throw error;
 
       // I wonder if there is a bug with supabase for types here as
@@ -77,14 +77,13 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
       const pointGroups: PointGroup[] = data.map((d) => {
         return {
           // id: uuidv4(),
-          color: 'red',
+          color: '#5FCBFD',
           points: d.extrapolation_values.map((x) => {
             return [x.year, x.value];
           }),
         };
       });
-      console.log(pointGroups);
-      graph.current?.updatePointGroups(pointGroups);
+
       // TODO eventually get min/max from point groups instead of extrapolation prompt
       graph.current?.updateMinMax(
         // @ts-ignore
@@ -92,6 +91,8 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
         // @ts-ignore
         data[0].extrapolation_prompt.maximum
       );
+
+      graph.current?.updatePointGroups(pointGroups);
     };
     fetchData();
   }, [extrapolationPrompt.id]);
@@ -109,15 +110,13 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
         colorScheme="red"
         variant="solid"
         onClick={async () => {
-          const { data, error } = await supabase
+          const { error } = await supabase
             .from('extrapolation_prompt')
             .update({ is_active: false })
             .eq('id', extrapolationPrompt.id);
 
           if (error) {
             console.error('Error updating extrapolation:', error);
-          } else {
-            console.log('Extrapolation updated successfully:', data);
           }
         }}
       >

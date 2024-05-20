@@ -91,25 +91,18 @@ async function createTables() {
     const client = await pool.connect();
 
     await client.query(createAdminTableSql);
-    console.log('admin table created successfully.');
 
     await client.query(createProfilesTableSql);
-    console.log('Profiles table created successfully.');
 
     await client.query(createExtrapolationPromptTableSql);
-    console.log('Extrapolation Prompt table created successfully.');
 
     await client.query(createUserExtrapolationTableSql);
-    console.log('User Extrapolation table created successfully.');
 
     await client.query(createExtrapolationValuesTableSql);
-    console.log('Extrapolation Values table created successfully.');
 
     await client.query(createGroundTruthTableSql);
-    console.log('Ground Truth table created successfully.');
 
     await client.query(createGroundTruthValuesTableSql);
-    console.log('Ground Truth Values table created successfully.');
 
     client.release();
   } catch (error) {

@@ -6,27 +6,14 @@ import {
   FormLabel,
   Input,
   Textarea,
-  // Text,
-  // VStack,
-  // HStack,
-  // IconButton,
 } from '@chakra-ui/react';
 import { supabase } from '../supabaseClient';
-// import { CloseIcon } from '@chakra-ui/icons';
-
-// interface ExtrapolationEntry {
-//   year: string;
-//   percentage: string;
-// }
 
 type NewExtrapolationProps = {
   session: any;
 };
 
 const NewExtrapolation: React.FC<NewExtrapolationProps> = () => {
-  // const [extrapolations, setExtrapolations] = useState<ExtrapolationEntry[]>([
-  //   { year: '', percentage: '' },
-  // ]);
   const [extrapolation_text, setExtrapolationText] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -69,25 +56,13 @@ const NewExtrapolation: React.FC<NewExtrapolationProps> = () => {
         throw new Error(error.message);
       }
       const id = data?.[0]?.id;
-      console.log('Extrapolation submitted successfully. ID:', id);
-      // TODO: Get the id back
       window.location.href = `/add_extrapolation?id=${id}`;
     } catch (error: any) {
       setError(error.error_description || error.message);
     } finally {
       setLoading(false);
     }
-    // TODO: Go back to add extrapolation page
   };
-
-  // TODO: Re-enable auth
-  // if (!user) {
-  //   return (
-  //     <Box p={4}>
-  //       <Text>You must be logged in to submit a extrapolation.</Text>
-  //     </Box>
-  //   );
-  // }
 
   return (
     <Box p={4} mx="auto" width={500}>

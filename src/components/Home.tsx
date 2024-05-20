@@ -4,11 +4,7 @@ import ExtrapolationsList from './ExtrapolationsList';
 // import SignUpForm from './SignUpForm';
 // import OAuth from './OAuth';
 
-type HomeProps = {
-  session: any;
-};
-
-const Home: React.FC<HomeProps> = ({ session }) => {
+const Home: React.FC = () => {
   return (
     <Box>
       {/* TODO: Move header to app.tsx */}

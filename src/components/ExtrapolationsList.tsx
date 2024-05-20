@@ -8,34 +8,26 @@ const ExtrapolationsList: React.FC = () => {
   const [extrapolations, setExtrapolations] = useState<ExtrapolationPrompt[]>(
     []
   );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
   useEffect(() => {
     const fetchExtrapolations = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('extrapolation_prompt')
-          .select('*')
-          .eq('is_active', true);
+      // try {
+      const { data, error } = await supabase
+        .from('extrapolation_prompt')
+        .select('*')
+        .eq('is_active', true);
 
-        if (error) throw error;
+      if (error) throw error;
 
-        setExtrapolations(data);
-      } catch (error: any) {
-        setError(error.error_description || error.message);
-      } finally {
-        setLoading(false);
-      }
+      setExtrapolations(data);
+      // } catch (error: any) {
+      // } finally {
+      // }
     };
 
     fetchExtrapolations();
   }, []);
 
-  if (loading) return <Box>Loading...</Box>;
-  if (error) return <Box>Error: {error}</Box>;
-
-  if (extrapolations.length === 0) return <Box>No extrapolations found.</Box>;
+  if (extrapolations.length === 0) return null;
 
   return (
     <Box display="flex" justifyContent="center">

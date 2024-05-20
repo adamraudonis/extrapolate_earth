@@ -76,7 +76,7 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                     variant="text"
                     size="sm"
                     onClick={async () => {
-                      const { data, error } =
+                      const { error } =
                         await supabase.auth.resetPasswordForEmail(email, {
                           redirectTo: 'https://extrapolate.earth/',
                         });
@@ -89,7 +89,6 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                           isClosable: true,
                         });
                       }
-                      console.log(data);
                     }}
                   >
                     Forgot password
@@ -140,7 +139,6 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                 Don't have an account?{' '}
                 <Link
                   onClick={() => {
-                    console.log('clicked');
                     setIsLogIn(false);
                   }}
                 >

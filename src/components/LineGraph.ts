@@ -20,8 +20,12 @@ export default class LineGraph {
   private yearsToForecast: number = 50;
   private minVal: number = 0;
   private maxVal: number = 100;
+  private width: number = 800;
+  private height: number = 600;
 
-  constructor() {
+  constructor(width: number, height: number) {
+    this.width = width;
+    this.height = height;
     this.line = d3.line();
     // Setup scales
     this.currentYear = new Date().getFullYear();
@@ -31,26 +35,9 @@ export default class LineGraph {
     this.xScale = d3
       .scaleLinear()
       .domain([this.currentYear, this.maxYear])
-      .range([0, 800]);
-    this.yScale = d3.scaleLinear().domain([0, 1]).range([600, 0]);
+      .range([0, this.width]);
+    this.yScale = d3.scaleLinear().domain([0, 1]).range([this.height, 0]);
   }
-
-  // constructor() {
-  //   this.line = d3.line();
-  //   // Setup scales
-  //   this.currentYear = new Date().getFullYear();
-  //   // TODO: Make this earlier if there is a dataset
-  //   // this.minYear = this.currentYear;
-  //   this.maxYear = this.currentYear + this.yearsToForecast;
-  //   this.xScale = d3
-  //     .scaleLinear()
-  //     .domain([this.currentYear, this.maxYear])
-  //     .range([0, 800]);
-  //   this.yScale = d3
-  //     .scaleLinear()
-  //     .domain([this.minVal, this.maxVal])
-  //     .range([600, 0]);
-  // }
 
   initialize(
     svgElement: SVGSVGElement,
@@ -62,24 +49,9 @@ export default class LineGraph {
     this.points = points;
     this.svg = d3
       .select(svgElement)
-      .attr('width', 800 + this.xOff * 2) // Increase width to accommodate the margin
-      .attr('height', 600 + this.yOff * 2) // Increase height to accommodate the margin
+      .attr('width', this.width + this.xOff * 2) // Increase width to accommodate the margin
+      .attr('height', this.height + this.yOff * 2) // Increase height to accommodate the margin
       .style('border', '1px solid black');
-
-    // this.svg
-    //   .append('g') // Append a group element for the plot area
-    //   // Apply a translation to create the margin
-    //   .attr(
-    //     'transform',
-    //     `translate(${this.xOff}, ${this.yScale(0) + this.yOff})`
-    //   )
-    //   .call(d3.axisBottom(this.xScale).tickFormat(d3.format('d')));
-
-    // this.svg
-    //   .append('g') // Append a group element for the plot area
-    //   .attr('transform', `translate(${this.xOff}, ${this.yOff})`) // Apply a translation to create the margin
-    //   .attr('class', 'yaxis')
-    //   .call(d3.axisLeft(this.yScale));
 
     if (!isReadOnly) {
       this.svg.on('click', (event: MouseEvent) => {
@@ -104,15 +76,13 @@ export default class LineGraph {
     this.xScale = d3
       .scaleLinear()
       .domain([this.currentYear, this.maxYear])
-      .range([0, 800]);
+      .range([0, this.width]);
     this.yScale = d3
       .scaleLinear()
       .domain([this.minVal, this.maxVal])
-      .range([600, 0]);
+      .range([this.height, 0]);
 
     if (this.svg) {
-      console.log('inside update min max', [this.minVal, this.maxVal]);
-
       this.svg
         .selectAll('.xaxis') // Select all path elements with class "apath"
         .remove(); // Remove all selected elements
@@ -139,7 +109,7 @@ export default class LineGraph {
   }
 
   updatePointGroups(pointGroups: PointGroup[]) {
-    // TODO: Adjust the scales based on min/max
+    // TODO: Adjust the scales based on min/max from data
     this.pointGroups = pointGroups;
     this.updateGraph();
   }
@@ -168,7 +138,6 @@ export default class LineGraph {
     if (!this.svg) {
       return; // Guard clause if svg is null
     }
-    console.log('inside update graph', this.points.length);
     this.svg
       .selectAll('path.apath') // Select all path elements with class "apath"
       .remove(); // Remove all selected elements
@@ -199,10 +168,13 @@ export default class LineGraph {
       .style('stroke', 'black')
       .style('stroke-width', 1)
       .on('click', (event, d) => {
+        event.stopPropagation();
+
         const target = event.srcElement.__data__;
         const index = this.points.findIndex(
           (point) => point[0] === target[0] && point[1] === target[1]
         );
+
         if (index !== -1) {
           this.points.splice(index, 1);
         }

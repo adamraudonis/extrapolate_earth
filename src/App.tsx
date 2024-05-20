@@ -92,7 +92,7 @@ export default function App() {
       <>
         <Header session={session} />
         <Routes>
-          <Route path="/" element={<Home session={session} />} />
+          <Route path="/" element={<Home />} />
           {/* <Route path="/about" element={<About />} /> */}
           {/* TODO: Actually use private route */}
           {/* <Route
