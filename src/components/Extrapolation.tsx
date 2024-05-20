@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { Button } from '@chakra-ui/react';
+
 import { supabase } from '../supabaseClient';
 import { ExtrapolationPrompt, ExtrapolationValue, PointGroup } from '../types';
 import LineGraph from './LineGraph';
+
 // import { v4 as uuidv4 } from 'uuid';
 
 // type UserExtrapolation = {

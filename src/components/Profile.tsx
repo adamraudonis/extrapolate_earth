@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box } from '@chakra-ui/react';
+import { Box, Heading } from '@chakra-ui/react';
 
 import { supabase } from '../supabaseClient';
 import { ExtrapolationPrompt } from '../types';
 import ExtrapolationsList from './ExtrapolationsList';
 
-const Home: React.FC = () => {
+type ProfileProps = {
+  session: any;
+};
+
+const Profile: React.FC<ProfileProps> = ({ session }) => {
   const [extrapolations, setExtrapolations] = useState<ExtrapolationPrompt[]>(
     []
   );
 
   useEffect(() => {
+    if (!session.user) return;
     const fetchExtrapolations = async () => {
       try {
         const { data, error } = await supabase
           .from('extrapolation_prompt')
           .select('*')
-          .eq('is_active', true);
+          .eq('is_active', true)
+          .eq('user_id', session.user.id);
 
         if (error) throw error;
 
@@ -28,13 +34,16 @@ const Home: React.FC = () => {
     };
 
     fetchExtrapolations();
-  }, []);
+  }, [session.user]);
 
   return (
     <Box>
+      <Heading as="h6" size="xs">
+        My Extrapolations
+      </Heading>
       <ExtrapolationsList extrapolations={extrapolations} />
     </Box>
   );
 };
 
-export default Home;
+export default Profile;

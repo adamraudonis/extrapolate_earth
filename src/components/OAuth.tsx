@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
 import './OAuth.css';
+
+import React, { useState } from 'react';
+
+import { supabase } from '../supabaseClient';
 
 type OAuthProps = {
   session: any;

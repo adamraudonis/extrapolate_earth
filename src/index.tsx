@@ -1,11 +1,15 @@
+import './index.css';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
+
 import { theme } from '@chakra-ui/pro-theme';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
 const proTheme = extendTheme(theme);
 const extendedConfig = {
   colors: { ...proTheme.colors, brand: proTheme.colors.blue },

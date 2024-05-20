@@ -1,4 +1,8 @@
 TODO:
 
+- Add row level security
 - Fix login with password redirect
 - Fix login with password and google toast
+- Only show latest output per user
+- When adding extrapolation, do the max width
+- TODO: Add ability to click and drag point

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { Box, Button, FormControl, FormLabel, Input } from '@chakra-ui/react';
-import { supabase, signUp, signIn } from '../supabaseClient';
+
+import { signIn, signUp, supabase } from '../supabaseClient';
 
 const SignUpForm: React.FC = () => {
   const [email, setEmail] = useState('');

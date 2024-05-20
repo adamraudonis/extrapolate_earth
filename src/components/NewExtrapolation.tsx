@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import {
   Box,
   Button,
@@ -7,6 +8,7 @@ import {
   Input,
   Textarea,
 } from '@chakra-ui/react';
+
 import { supabase } from '../supabaseClient';
 
 type NewExtrapolationProps = {

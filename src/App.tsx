@@ -19,17 +19,16 @@
 // export default App;
 
 import './index.css';
-import { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
+
+import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom'; // Navigate
+
+import AddExtrapolation from './components/AddExtrapolation';
+import Header from './components/Header';
 import Home from './components/Home';
 import NewExtrapolation from './components/NewExtrapolation';
-import AddExtrapolation from './components/AddExtrapolation';
-// import ExtrapolationPageWrapper from './components/ExtrapolationPageWrapper';
-
-// import About from './components/About';
-import React from 'react';
-import { Routes, Route } from 'react-router-dom'; // Navigate
-import Header from './components/Header';
+import Profile from './components/Profile';
+import { supabase } from './supabaseClient';
 
 // const PrivateRoute = ({ element, session, ...rest }: any) => {
 //   // redirect to home page if user is not authenticated
@@ -105,6 +104,8 @@ export default function App() {
           }
         /> */}
           {/* <Route path="/extrapolation" element={<ExtrapolationPageWrapper />} /> */}
+          <Route path="/profile" element={<Profile session={session} />} />
+
           <Route
             path="/new_extrapolation"
             element={<NewExtrapolation session={session} />}

@@ -1,32 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, List, ListItem } from '@chakra-ui/react';
-import { supabase } from '../supabaseClient';
 import Extrapolation from './Extrapolation';
 import { ExtrapolationPrompt } from '../types';
 
-const ExtrapolationsList: React.FC = () => {
-  const [extrapolations, setExtrapolations] = useState<ExtrapolationPrompt[]>(
-    []
-  );
-  useEffect(() => {
-    const fetchExtrapolations = async () => {
-      // try {
-      const { data, error } = await supabase
-        .from('extrapolation_prompt')
-        .select('*')
-        .eq('is_active', true);
+type ExtrapolationListProps = {
+  extrapolations: ExtrapolationPrompt[];
+};
 
-      if (error) throw error;
-
-      setExtrapolations(data);
-      // } catch (error: any) {
-      // } finally {
-      // }
-    };
-
-    fetchExtrapolations();
-  }, []);
-
+const ExtrapolationsList: React.FC<ExtrapolationListProps> = ({
+  extrapolations,
+}) => {
   if (extrapolations.length === 0) return null;
 
   return (

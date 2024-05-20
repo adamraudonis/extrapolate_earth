@@ -155,7 +155,7 @@ export default class LineGraph {
         this.line
           .x((d) => this.xScale(d[0]) + this.xOff)
           .y((d) => this.yScale(d[1]) + this.yOff)
-          .curve(d3.curveCatmullRom.alpha(0.5))
+          .curve(d3.curveCatmullRom.alpha(1))
       )
       .attr('class', 'apath')
       .style('fill', 'none')

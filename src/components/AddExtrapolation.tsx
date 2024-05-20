@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { Box, Button, Text, useToast } from '@chakra-ui/react';
+
 import { supabase } from '../supabaseClient';
 import LineGraph from './LineGraph';
 

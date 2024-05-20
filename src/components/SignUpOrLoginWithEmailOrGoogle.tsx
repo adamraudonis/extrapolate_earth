@@ -1,26 +1,30 @@
+import { useState } from 'react';
+
 import {
   Button,
-  FormHelperText,
   Container,
   FormControl,
+  FormHelperText,
   FormLabel,
   Heading,
   HStack,
   Input,
   Link,
+  ModalContent,
   Stack,
   Text,
-  ModalContent,
   useToast,
 } from '@chakra-ui/react';
+
+import { signIn, signUp, supabase } from '../supabaseClient';
 import { GoogleIcon } from './ProviderIcons';
-import { useState } from 'react';
-import { supabase, signIn, signUp } from '../supabaseClient';
 
 export const SignUpOrLoginWithEmailOrGoogle = ({
   isLogInProp,
+  setIsOpen,
 }: {
   isLogInProp: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -99,6 +103,13 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                     onClick={async () => {
                       try {
                         await signIn(email, password);
+                        setIsOpen(false);
+                        toast({
+                          title: 'Logged In',
+                          status: 'success',
+                          duration: 1000,
+                          isClosable: true,
+                        });
                       } catch (error: any) {
                         toast({
                           title: 'Error',
@@ -107,14 +118,6 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                           duration: 5000,
                           isClosable: true,
                         });
-                      } finally {
-                        // toast({
-                        //   title: 'Logging In',
-                        //   description: "We're logging you in!",
-                        //   status: 'error',
-                        //   duration: 1000,
-                        //   isClosable: true,
-                        // });
                       }
                     }}
                   >
@@ -129,6 +132,23 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                           provider: 'google',
                         });
                       console.log(error);
+                      if (error) {
+                        toast({
+                          title: 'Error',
+                          description: error.message,
+                          status: 'error',
+                          duration: 5000,
+                          isClosable: true,
+                        });
+                      } else {
+                        setIsOpen(false);
+                        toast({
+                          title: 'Logged In',
+                          status: 'success',
+                          duration: 1000,
+                          isClosable: true,
+                        });
+                      }
                     }}
                   >
                     Sign in with Google
@@ -180,20 +200,19 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                     onClick={async () => {
                       try {
                         await signUp(email, password);
+                        setIsOpen(false);
+                        toast({
+                          title: 'Account created',
+                          status: 'success',
+                          duration: 1000,
+                          isClosable: true,
+                        });
                       } catch (error: any) {
                         toast({
                           title: 'Error',
                           description: error.message,
                           status: 'error',
                           duration: 5000,
-                          isClosable: true,
-                        });
-                      } finally {
-                        toast({
-                          title: 'Logging In',
-                          description: "We're logging you in!",
-                          status: 'error',
-                          duration: 1000,
                           isClosable: true,
                         });
                       }
@@ -210,6 +229,23 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
                           provider: 'google',
                         });
                       console.log(error);
+                      if (error) {
+                        toast({
+                          title: 'Error',
+                          description: error.message,
+                          status: 'error',
+                          duration: 5000,
+                          isClosable: true,
+                        });
+                      } else {
+                        setIsOpen(false);
+                        toast({
+                          title: 'Logged In',
+                          status: 'success',
+                          duration: 1000,
+                          isClosable: true,
+                        });
+                      }
                     }}
                   >
                     Sign up with Google
@@ -230,16 +266,6 @@ export const SignUpOrLoginWithEmailOrGoogle = ({
           )}
         </Stack>
       </Container>
-      {/* <ModalHeader>Modal Title</ModalHeader>
-  <ModalCloseButton />
-  <ModalBody>Test</ModalBody>
-
-  <ModalFooter>
-    <Button colorScheme="blue" mr={3}>
-      Close
-    </Button>
-    <Button variant="ghost">Secondary Action</Button>
-  </ModalFooter> */}
     </ModalContent>
   );
 };
