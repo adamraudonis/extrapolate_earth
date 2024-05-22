@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Box, Button, Text, useToast } from '@chakra-ui/react';
+import { Box, Button, Text, useColorMode, useToast } from '@chakra-ui/react';
 
 import { supabase } from '../supabaseClient';
 import LineGraph from './LineGraph';
@@ -15,11 +15,12 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = ({ session }) => {
   const graph = useRef<LineGraph | null>(null);
   const [extrapolationPrompt, setExtrapolationPrompt] = useState<any>(null);
   const toast = useToast();
+  const { colorMode } = useColorMode();
 
   // Callback ref to handle SVG initialization immediately when the element is mounted
   const setSvgRef = async (node: SVGSVGElement | null) => {
     if (extrapolationPrompt && node && !graph.current) {
-      graph.current = new LineGraph(true, 800, 600);
+      graph.current = new LineGraph(colorMode, true, 800, 600);
       const currentYear = new Date().getFullYear();
       graph.current.initialize(
         node,

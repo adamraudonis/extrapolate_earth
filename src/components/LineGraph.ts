@@ -1,4 +1,7 @@
 import * as d3 from 'd3';
+
+import { ColorMode } from '@chakra-ui/color-mode';
+
 import { PointGroup } from '../types';
 
 export default class LineGraph {
@@ -26,11 +29,18 @@ export default class LineGraph {
   private selectedCircle: any = null;
   private dragged: boolean = false;
   private editable: boolean = false;
+  private colorMode: ColorMode = 'light';
 
-  constructor(editable: boolean, width: number, height: number) {
+  constructor(
+    colorMode: ColorMode,
+    editable: boolean,
+    width: number,
+    height: number
+  ) {
     this.editable = editable;
     this.width = width;
     this.height = height;
+    this.colorMode = colorMode;
     this.line = d3.line();
     this.currentYear = new Date().getFullYear();
     // TODO: Make this earlier if there is a dataset
@@ -159,7 +169,7 @@ export default class LineGraph {
       )
       .attr('class', 'apath')
       .style('fill', 'none')
-      .style('stroke', 'black')
+      .style('stroke', this.colorMode === 'light' ? 'black' : 'white')
       .style('stroke-width', 2);
 
     const drag = d3

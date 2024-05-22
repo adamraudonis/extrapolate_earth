@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Button } from '@chakra-ui/react';
+import { Button, useColorMode } from '@chakra-ui/react';
 
 import { supabase } from '../supabaseClient';
 import { ExtrapolationPrompt, ExtrapolationValue, PointGroup } from '../types';
@@ -36,6 +36,8 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
   // const [extrapolationValues, setExtrapolationsValues] = useState<
   //   ExtrapolationValue[]
   // >([]);
+  const { colorMode } = useColorMode();
+
   const [userExtrapolations, setUserExtrapolations] = useState<
     UserExtrapolationResponse[]
   >([]);
@@ -45,7 +47,7 @@ const Extrapolation: React.FC<ExtrapolationProps> = ({
   const setSvgRef = (node: SVGSVGElement | null) => {
     if (node && !graph.current) {
       // Check if node exists and graph is not already initialized
-      graph.current = new LineGraph(false, 400, 300);
+      graph.current = new LineGraph(colorMode, false, 400, 300);
       graph.current.initialize(node, true);
     }
   };

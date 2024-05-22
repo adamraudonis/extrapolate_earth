@@ -30,33 +30,10 @@ type HeaderProps = {
 };
 
 const Header: React.FC<HeaderProps> = ({ session }) => {
-  // const [user, setUser] = useState<any>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isLogIn, setIsLogIn] = useState(true);
   const { colorMode, toggleColorMode } = useColorMode();
 
-  // const [signUpisOpen, setSignUpisOpen] = useState(false);
-
-  // useEffect(() => {
-  //   supabase.auth.onAuthStateChange((_event, session) => {
-  //     setUser(session?.user ?? null);
-  //   });
-  // }, []);
-
-  // const handleSignOut = async () => {
-  //   await supabase.auth.signOut();
-  //   setUser(null);
-  // };
-
-  // <Flex
-  //   // justifyContent="space-between"
-  //   // alignItems="center"
-  //   p={4}
-  //   // bg="blue.500"
-  //   borderBottom="1px solid lightgray"
-  //   height="40px"
-  //   alignItems="center"
-  // >
   return (
     <Flex
       minWidth="max-content"
@@ -81,10 +58,7 @@ const Header: React.FC<HeaderProps> = ({ session }) => {
           style={{
             cursor: 'pointer',
             fontFamily: 'Gotham Light',
-            color: '#53585F',
-            // display: 'flex',
-            // alignItems: 'center',
-            // justifyContent: 'center',
+            color: colorMode === 'light' ? '#53585F' : 'white',
           }}
           onClick={() => {
             window.location.href = '/';
