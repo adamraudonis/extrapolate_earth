@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ session }) => {
               window.location.href = '/new_extrapolation';
             }}
           >
-            New Extrapolation
+            Create New
           </Button>
 
           <Menu>

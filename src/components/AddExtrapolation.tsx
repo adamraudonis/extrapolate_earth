@@ -14,6 +14,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = ({ session }) => {
   const [points, setPoints] = useState<[number, number][]>([]);
   const graph = useRef<LineGraph | null>(null);
   const [extrapolationPrompt, setExtrapolationPrompt] = useState<any>(null);
+
   const toast = useToast();
   const { colorMode } = useColorMode();
 
@@ -22,12 +23,20 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = ({ session }) => {
     if (extrapolationPrompt && node && !graph.current) {
       graph.current = new LineGraph(colorMode, true, 800, 600);
       const currentYear = new Date().getFullYear();
-      graph.current.initialize(
-        node,
-        false,
-        [],
-        [[currentYear, extrapolationPrompt.initial_year_value]]
-      );
+
+      let historicalData: [number, number][] = [
+        [currentYear, extrapolationPrompt.initialYearValue],
+      ];
+      console.log('extrapolationPrompt', extrapolationPrompt);
+      if (extrapolationPrompt.ground_truth_values) {
+        historicalData = extrapolationPrompt.ground_truth_values.map(
+          (item: any) => [item.year, item.value]
+        );
+
+        historicalData.sort((a, b) => a[0] - b[0]);
+      }
+
+      graph.current.initialize(node, false, [], [], historicalData);
       graph.current.updateMinMax(
         extrapolationPrompt.minimum,
         extrapolationPrompt.maximum
@@ -48,9 +57,12 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = ({ session }) => {
     const fetchExtraPolationPrompt = async (extrapolationPromptId: number) => {
       const { data, error } = await supabase
         .from('extrapolation_prompt')
-        .select('*')
+        .select('*, ground_truth_values (year, value)')
         .eq('id', extrapolationPromptId);
+      console.log('the data');
+      console.log(data);
       if (error) throw error;
+
       setExtrapolationPrompt(data[0]);
     };
     fetchExtraPolationPrompt(parseInt(id));
@@ -105,6 +117,11 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = ({ session }) => {
     }
   };
 
+  const description =
+    extrapolationPrompt && extrapolationPrompt.description ? (
+      <Text>{extrapolationPrompt.description}</Text>
+    ) : null;
+
   return (
     <Box
       p={4}
@@ -116,6 +133,7 @@ const AddExtrapolation: React.FC<AddExtrapolationProps> = ({ session }) => {
     >
       <Box>
         <Text>{extrapolationPrompt?.extrapolation_text}</Text>
+        {description}
         <svg ref={setSvgRef}></svg>
 
         <div>

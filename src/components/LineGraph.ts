@@ -9,6 +9,7 @@ export default class LineGraph {
 
   // These are the editable points
   private points: [number, number][] = [];
+  private historicalPoints: [number, number][] = [];
   private svg:
     | d3.Selection<SVGSVGElement, unknown, null, undefined>
     | undefined;
@@ -18,7 +19,7 @@ export default class LineGraph {
   private xOff: number = 80;
   private yOff: number = 20;
   private currentYear: number = 0;
-  // private minYear: number = 0;
+  private minYear: number = 0;
   private maxYear: number = 0;
   private yearsToForecast: number = 50;
   private minVal: number = 0;
@@ -30,6 +31,8 @@ export default class LineGraph {
   private dragged: boolean = false;
   private editable: boolean = false;
   private colorMode: ColorMode = 'light';
+  private maxPastYears: number = 50;
+  private lastHistoricalYear: number = 0;
 
   constructor(
     colorMode: ColorMode,
@@ -43,9 +46,11 @@ export default class LineGraph {
     this.colorMode = colorMode;
     this.line = d3.line();
     this.currentYear = new Date().getFullYear();
+    this.lastHistoricalYear = this.currentYear;
     // TODO: Make this earlier if there is a dataset
-    // this.minYear = this.currentYear;
+    this.minYear = this.currentYear;
     this.maxYear = this.currentYear + this.yearsToForecast;
+    console.log('constructor max year', this.maxYear);
     this.xScale = d3
       .scaleLinear()
       .domain([this.currentYear, this.maxYear])
@@ -57,10 +62,22 @@ export default class LineGraph {
     svgElement: SVGSVGElement,
     isReadOnly: boolean = true,
     pointGroups: PointGroup[] = [],
-    points: [number, number][] = []
+    points: [number, number][] = [],
+    historicalPoints: [number, number][] = []
   ) {
     this.pointGroups = pointGroups;
     this.points = points;
+
+    this.historicalPoints = historicalPoints;
+    if (this.historicalPoints.length > 0) {
+      const finalIdx = this.historicalPoints.length - 1;
+      this.lastHistoricalYear = this.historicalPoints[finalIdx][0];
+      // Use unshift() to add the historical point to the beginning of the array
+      this.points.unshift(this.historicalPoints[finalIdx]);
+    }
+
+    console.log('points ', this.points);
+
     this.svg = d3
       .select(svgElement)
       .attr('width', this.width + this.xOff * 2) // Increase width to accommodate the margin
@@ -87,9 +104,17 @@ export default class LineGraph {
   updateMinMax(minVal: number, maxVal: number) {
     this.minVal = minVal;
     this.maxVal = maxVal;
+    console.log('update max year', this.maxYear);
+    if (this.historicalPoints.length > 0) {
+      this.minYear = Math.max(
+        this.currentYear - this.maxPastYears,
+        this.historicalPoints[0][0]
+      );
+    }
+
     this.xScale = d3
       .scaleLinear()
-      .domain([this.currentYear, this.maxYear])
+      .domain([this.minYear, this.maxYear])
       .range([0, this.width]);
     this.yScale = d3
       .scaleLinear()
@@ -172,6 +197,25 @@ export default class LineGraph {
       .style('stroke', this.colorMode === 'light' ? 'black' : 'white')
       .style('stroke-width', 2);
 
+    this.svg
+      .selectAll('path.historical') // Select all path elements with class "apath"
+      .remove(); // Remove all selected elements
+
+    this.svg
+      .selectAll('path.historical')
+      .data([this.historicalPoints])
+      .join('path')
+      .attr(
+        'd',
+        this.line
+          .x((d) => this.xScale(d[0]) + this.xOff)
+          .y((d) => this.yScale(d[1]) + this.yOff)
+      )
+      .attr('class', 'historical')
+      .style('fill', 'none')
+      .style('stroke', this.colorMode === 'light' ? 'black' : 'white')
+      .style('stroke-width', 2);
+
     const drag = d3
       .drag()
       .on('start', (event, d) => {
@@ -187,6 +231,26 @@ export default class LineGraph {
           (point) => point[0] === targetData[0] && point[1] === targetData[1]
         );
 
+        if (!this.svg) {
+          return; // Guard clause if svg is null
+        }
+
+        // Do not allow changing the first point
+        // There will always be 1 point and we know it is sorted
+        // so we can just do:
+        if (this.hoverIndex === 0) {
+          this.hoverIndex = -1;
+          return;
+        }
+        // const pair = d3.pointer(event, this.svg.node());
+        // const year = Math.round(this.xScale.invert(pair[0] - this.xOff));
+        // if (year === this.lastHistoricalYear) {
+        //   console.log("Can't drag or delete current or past year");
+        //   // Set this so delete code is not called
+        //   this.hoverIndex = -1;
+        //   return;
+        // }
+
         this.selectedCircle = target;
       })
       .on('drag', (event, d) => {
@@ -196,6 +260,7 @@ export default class LineGraph {
         }
         const [x, y] = d3.pointer(event, this.svg.node());
         const year = Math.round(this.xScale.invert(x - this.xOff));
+
         const value = this.yScale.invert(y - this.yOff);
         const pt_x = Math.max(Math.min(year, this.maxYear), this.currentYear);
         const pt_y = Math.max(Math.min(value, this.maxVal), this.minVal);
@@ -269,6 +334,7 @@ export default class LineGraph {
         .raise();
     }
 
+    // TODO: I'm not sure if we should use the same line
     this.pointGroups.forEach((pointGroup, idx) => {
       if (!this.svg) {
         return; // Guard clause if svg is null

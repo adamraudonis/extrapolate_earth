@@ -1,8 +1,13 @@
 TODO:
 
-- Add row level security
-- Fix login with password redirect
+- When you paste in a value, parse the array.
+  Store the array in data sources. Store the title, units etc. Open the add_extrapolation page.
+  Ensure we can load historical data. Move submit button to before table or table to side of graph
+
+- Add data source from a csv
+- Make extrapolation prompt prettier
+- Use chatgpt to make categories for prompt
+- Make profile page for your extrapolations
 - Fix login with password and google toast
 - Only show latest output per user
 - When adding extrapolation, do the max width
-- TODO: Add ability to click and drag point
